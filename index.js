@@ -37,7 +37,7 @@ const KEYS_RU_LOWER_CASE = [{ key: 'ё', code: 'Backquote' }, { key: '1', code: 
   { key: 'ъ', code: 'BracketRight' }, { key: '\\', code: 'Backslash' }, { key: 'Del', code: 'Delete' }, { key: 'CapsLock', code: 'CapsLock' },
   { key: 'ф', code: 'KeyA' }, { key: 'ы', code: 'KeyS' }, { key: 'в', code: 'KeyD' }, { key: 'а', code: 'KeyF' }, { key: 'п', code: 'KeyG' },
   { key: 'р', code: 'KeyH' }, { key: 'о', code: 'KeyJ' }, { key: 'л', code: 'KeyK' }, { key: 'д', code: 'KeyL' }, { key: 'ж', code: 'Semicolon' },
-  { key: "э", code: 'Quote' }, { key: 'Enter', code: 'Enter' }, { key: 'Shift', code: 'ShiftLeft' }, { key: 'я', code: 'KeyZ' }, { key: 'ч', code: 'KeyX' },
+  { key: 'э', code: 'Quote' }, { key: 'Enter', code: 'Enter' }, { key: 'Shift', code: 'ShiftLeft' }, { key: 'я', code: 'KeyZ' }, { key: 'ч', code: 'KeyX' },
   { key: 'с', code: 'KeyC' }, { key: 'м', code: 'KeyV' }, { key: 'и', code: 'KeyB' }, { key: 'т', code: 'KeyN' }, { key: 'ь', code: 'KeyM' },
   { key: 'б', code: 'Comma' }, { key: 'ю', code: 'Period' }, { key: '.', code: 'Slash' }, { key: '↑', code: 'ArrowUp' }, { key: 'Shift', code: 'ShiftRight' },
   { key: 'CTRL', code: 'ControlLeft' }, { key: 'WIN', code: 'MetaLeft' }, { key: 'ALT', code: 'AltLeft' }, { key: ' ', code: 'Space' }, { key: 'ALT', code: 'AltRight' },
@@ -58,6 +58,99 @@ const KEYS_RU_UPPER_CASE = [{ key: 'Ё', code: 'Backquote' }, { key: '!', code: 
   { key: 'CTRL', code: 'ControlLeft' }, { key: 'WIN', code: 'MetaLeft' }, { key: 'ALT', code: 'AltLeft' }, { key: ' ', code: 'Space' }, { key: 'ALT', code: 'AltRight' },
   { key: '←', code: 'ArrowLeft' }, { key: '↓', code: 'ArrowDown' }, { key: '→', code: 'ArrowRight' }, { key: 'CTRL', code: 'ControlRight' }];
 
+const LANG_SET = [KEYS_EN_LOWER_CASE, KEYS_EN_UPPER_CASE, KEYS_RU_LOWER_CASE, KEYS_RU_UPPER_CASE];
+let langIndex = localStorage.getItem('lang') ? Number.parseInt(localStorage.getItem('lang'), 10) : 0;
+
+function enterData(event) {
+  const key = event.target;
+  if (key.classList.contains('CapsLock') && key.classList.contains('pressed')) {
+    key.classList.remove('pressed');
+    LANG_SET[langIndex].forEach((element) => {
+      const selKey = document.querySelector(`.${element.code}`);
+      selKey.innerHTML = `${element.key}`;
+    });
+  } else {
+    key.classList.add('pressed');
+    if (key.classList.contains('CapsLock') || key.classList.contains('ShiftLeft')) {
+      LANG_SET[langIndex + 1].forEach((element) => {
+        const selKey = document.querySelector(`.${element.code}`);
+        selKey.innerHTML = `${element.key}`;
+      });
+    }
+    const textarea = document.querySelector('.textarea');
+    textarea.focus();
+    if (key.classList.contains('Tab')) {
+      textarea.value += '    ';
+    } else if (key.classList.contains('Backspace')) {
+      textarea.value = textarea.value.substring(0, textarea.value.length - 1);
+    } else if (!key.classList.contains('ShiftLeft') && !key.classList.contains('ShiftRight')
+    && !key.classList.contains('ControlLeft') && !key.classList.contains('MetaLeft')
+    && !key.classList.contains('AltLeft') && !key.classList.contains('AltRight')
+    && !key.classList.contains('AltLeft') && !key.classList.contains('ControlRight')
+    && !key.classList.contains('CapsLock')) {
+      textarea.value += key.innerHTML;
+    }
+  }
+}
+
+function removePress(event) {
+  const caps = document.querySelector('.CapsLock');
+  const capsFlag = !caps.classList.contains('pressed');
+  if (!event.target.classList.contains('CapsLock')) {
+    event.target.classList.remove('pressed');
+  }
+  if (event.code === 'ShiftLeft'
+  || event.code === 'ShiftRight'
+  || event.target.classList.contains('ShiftLeft')
+  || event.target.classList.contains('ShiftRight') || capsFlag) {
+    LANG_SET[langIndex].forEach((element) => {
+      const selKey = document.querySelector(`.${element.code}`);
+      selKey.innerHTML = `${element.key}`;
+    });
+  }
+  document.querySelector('.textarea').focus();
+}
+
+function checkAltToSwitchLang(event) {
+  if (event.code === 'AltLeft') {
+    langIndex = langIndex === 0 ? 2 : 0;
+    localStorage.setItem('lang', langIndex);
+    LANG_SET[langIndex].forEach((element) => {
+      const selKey = document.querySelector(`.${element.code}`);
+      selKey.innerHTML = `${element.key}`;
+    });
+  } else {
+    document.querySelector(`.${event.code}`).classList.remove('pressed');
+  }
+  document.querySelector(`.${event.code}`).classList.remove('pressed');
+}
+
+function enterKeyData(event) {
+  const virtualKey = document.querySelector(`.${event.code}`);
+  if (event.code === 'CapsLock' && virtualKey.classList.contains('pressed')) {
+    virtualKey.classList.remove('pressed');
+  } else {
+    virtualKey.classList.add('pressed');
+  }
+  if (event.code === 'ControlLeft') {
+    document.onkeyup = checkAltToSwitchLang;
+  }
+  if (event.code === 'ShiftLeft'
+  || event.code === 'ShiftRight'
+  || (event.code === 'CapsLock' && virtualKey.classList.contains('pressed'))) {
+    LANG_SET[langIndex + 1].forEach((element) => {
+      const selKey = document.querySelector(`.${element.code}`);
+      selKey.innerHTML = `${element.key}`;
+    });
+  }
+}
+
+function removePressedKey(event) {
+  if (event.code !== 'CapsLock') {
+    document.querySelector(`.${event.code}`).classList.remove('pressed');
+  }
+}
+
 function createKbd() {
   const WRAPPER = document.createElement('div');
   WRAPPER.classList.add('wrapper');
@@ -65,73 +158,28 @@ function createKbd() {
   TEXTAREA.classList.add('textarea');
   TEXTAREA.rows = 5;
   TEXTAREA.cols = 94;
+  const HEADER = document.createElement('h1');
+  HEADER.innerHTML = "Virtual keyboard by proboynick"
+  WRAPPER.appendChild(HEADER);
   WRAPPER.appendChild(TEXTAREA);
   const KBD = document.createElement('div');
   KBD.classList.add('keyboard');
   WRAPPER.appendChild(KBD);
+  const ADD_INFO = document.createElement('p');
+  ADD_INFO.innerHTML = "To switch language press left-ctrl + left-alt";
+  WRAPPER.appendChild(ADD_INFO);
   document.body.appendChild(WRAPPER);
-  for (let i = 0; i < KEYS_EN_LOWER_CASE.length; i += 1) {
+  for (let i = 0; i < LANG_SET[langIndex].length; i += 1) {
     const KEY = document.createElement('div');
     KEY.classList.add('key');
-    KEY.classList.add(KEYS_EN_LOWER_CASE[i].code);
-    KEY.innerHTML = KEYS_EN_LOWER_CASE[i].key;
-    KEY.addEventListener("mousedown", enterData);
+    KEY.classList.add(LANG_SET[langIndex][i].code);
+    KEY.innerHTML = LANG_SET[langIndex][i].key;
+    KEY.addEventListener('mousedown', enterData);
+    KEY.addEventListener('mouseup', removePress);
     KBD.appendChild(KEY);
+    TEXTAREA.addEventListener('keydown', enterKeyData);
+    TEXTAREA.addEventListener('keyup', removePress);
   }
 }
 createKbd();
-
-function enterData(event) {
-  console.log(event);
-  event.target.classList.add("pressed");
-  let textarea = document.querySelector(".textarea");
-  textarea.innerHTML += event.target.innerHTML; 
-}
-
-document.onkeydown = function (event) {
-  document.querySelector(`.${event.code}`).classList.add("pressed");
-  if (event.code === 'ControlLeft') {
-    document.onkeyup = function (event) {
-      if (event.code === 'AltLeft') {
-        KEYS_RU_LOWER_CASE.forEach((element) => {
-          const selKey = document.querySelector(`.${element.code}`);
-          selKey.innerHTML = `${element.key}`;
-        });
-      } else {
-        document.querySelector(`.${event.code}`).classList.remove("pressed"); 
-      }
-    }
-  }
-  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
-    KEYS_EN_UPPER_CASE.forEach((element) => {
-      const selKey = document.querySelector(`.${element.code}`);
-      selKey.innerHTML = `${element.key}`;
-    });
-  }
-};
-
-
-
-function changeLang(event) {
-  if (event.code === 'ControlLeft') {
-    document.onkeyup = function (event) {
-      if (event.code === 'AltLeft') {
-        KEYS_RU_LOWER_CASE.forEach((element) => {
-          const selKey = document.querySelector(`.${element.code}`);
-          selKey.innerHTML = `${element.key}`;
-        });
-      }
-    }
-  }
-};
-
-
-document.onkeyup = function (event) {
-  document.querySelector(`.${event.code}`).classList.remove("pressed");
-  if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
-    KEYS_EN_LOWER_CASE.forEach((element) => {
-      const selKey = document.querySelector(`.${element.code}`);
-      selKey.innerHTML = `${element.key}`;
-    });
-  }
-};
+document.onkeyup = removePressedKey;
