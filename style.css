@@ -1,0 +1,119 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.wrapper {
+    width: 710px;
+    height: 100vh;
+    padding: 0;
+    margin: 0 auto;
+    font-family: "Trebuchet MS", "Helvetica", sans-serif;
+    user-select: none;
+}
+
+h1 {
+    text-align: center;
+    margin: 15px auto;
+    color: rgb(155, 111, 153);
+}
+
+p {
+    text-align: center;
+    margin: 15px auto;
+    color: rgb(155, 111, 153);
+    font-size: 24px;
+}
+
+.textarea {
+    display: block;
+    width: 700px;
+    height: 200px;
+    margin: 10px auto 10px;
+    padding: 10px;
+    font-size: 18px;
+    color: #444444;
+    font-family: inherit;
+}
+
+.key {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    background: #444444;
+    transition: border-radius 0.3s, background-color 0.3s;
+}
+
+.key.pressed {
+    border-radius: 20px;
+    background: rgb(81, 255, 133);
+}
+
+.keyboard {
+    min-width: 704px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 6px;
+    background-color: #888888;
+    border: 3px solid black;
+    justify-content: center;
+    padding: 6px 0;
+}
+
+.Backspace, 
+.CapsLock, 
+.ShiftLeft,
+.Tab,
+.Enter, 
+.ShiftRight,
+.ControlLeft,
+.MetaLeft,
+.AltLeft,
+.AltRight,
+.ControlRight,
+.ArrowUp,
+.ArrowLeft,
+.ArrowDown,
+.ArrowRight,
+.ControlRight,
+.Delete {
+    background: black;
+}
+
+
+.Backspace, 
+.CapsLock, 
+.ShiftLeft {
+    width: 100px;
+}
+
+.Tab {
+    width: 50PX;
+}
+
+.Delete {
+    width: 44px;
+}
+
+.Enter, 
+.ShiftRight {
+    width: 86px;
+}
+
+.Space {
+    width: 330px;
+}
+
+.key:hover {
+background: rgba(127, 255, 212, 0.5);
+}
+
+
+
