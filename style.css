@@ -12,6 +12,17 @@
     font-family: "Trebuchet MS", "Helvetica", sans-serif;
 }
 
+.textarea {
+    display: block;
+    width: 700px;
+    height: 200px;
+    margin: 10px auto 10px;
+    padding: 10px;
+    font-size: 18px;
+    color: #444444;
+    font-family: inherit;
+}
+
 .key {
     width: 40px;
     height: 40px;
